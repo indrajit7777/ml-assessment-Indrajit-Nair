@@ -1,0 +1,70 @@
+# I'm converting the date column so I can pull out specific parts like month and day
+df['transaction_date'] = pd.to_datetime(df['transaction_date'])
+
+# Extracting time features to see if timing affects sales
+df['year'] = df['transaction_date'].dt.year
+df['month'] = df['transaction_date'].dt.month
+df['day_of_week'] = df['transaction_date'].dt.dayofweek
+
+# Creating a flag for month-end. 
+# I chose day 25 and above because that's usually when people get paid and spend more.
+df['is_month_end'] = (df['transaction_date'].dt.day >= 25).astype(int)
+
+df.head()
+2. Temporal Train-Test Split
+Python
+# Since this is retail data, I can't just shuffle it. I need to keep the order.
+# I'll sort by date and put the oldest 80% in training and newest 20% in testing.
+df = df.sort_values(by='transaction_date')
+
+split = int(0.8 * len(df))
+train_df = df.iloc[:split]
+test_df = df.iloc[split:]
+
+# Separate what we are trying to predict (items_sold) from the rest
+X_train = train_df.drop(['items_sold', 'transaction_date'], axis=1) # Don't forget to drop the raw date!
+y_train = train_df['items_sold']
+
+X_test = test_df.drop(['items_sold', 'transaction_date'], axis=1)
+y_test = test_df['items_sold']
+3. Preprocessing 
+Python
+# I'm using a Pipeline here because it's a cleaner way to handle 
+# scaling numbers and encoding categories at the same time.
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+
+# Sorting columns into groups
+categorical = ['promotion_type', 'location_type', 'store_size']
+numerical = ['store_id', 'competition_density', 'year', 'month', 'day_of_week', 'is_weekend', 'is_festival', 'is_month_end']
+
+# Creating the transformer
+preprocessor = ColumnTransformer([
+    ('cat_features', OneHotEncoder(handle_unknown='ignore'), categorical),
+    ('num_features', StandardScaler(), numerical)
+])
+4. Model and Evaluation
+Python
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+
+# Combine the preprocessing and the model into one "flow"
+model_pipeline = Pipeline([
+    ('prep', preprocessor),
+    ('lr', LinearRegression())
+])
+
+# Training the model
+model_pipeline.fit(X_train, y_train)
+
+# Making predictions
+predictions = model_pipeline.predict(X_test)
+
+# Checking how far off the predictions are
+rmse = np.sqrt(mean_squared_error(y_test, predictions))
+mae = mean_absolute_error(y_test, predictions)
+
+print(f"Average error (MAE): {mae:.2f} items")
+print(f"Root Mean Square Error: {rmse:.2f}")
+
