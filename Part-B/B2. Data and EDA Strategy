@@ -1,0 +1,51 @@
+B2(a) — Data Joining and Grain 
+The data comes from four tables: transactions, store attributes, promotion details, and calendar.
+First, I would join the tables using common keys:
+Join transactions with store attributes using store_id
+Join transactions with promotion details using promotion_type
+Join transactions with calendar using transaction_date
+After joining, all information will be in one dataset.
+Grain of dataset:
+One row represents one store on one date (or one transaction period).
+Before modelling, I would perform some aggregations, such as:
+Total items_sold per store per day/month
+Average footfall
+Count of promotions used
+Possibly group data monthly if needed
+This ensures the dataset is consistent and suitable for modelling.
+
+
+B2(b) — EDA Strategy 
+Before building the model, I would perform the following analysis:
+1. Distribution of items_sold
+Plot: Histogram
+Check: Is data skewed or normal?
+Use: If highly skewed → may apply log transformation
+2. Sales by promotion type
+Plot: Bar chart
+Check: Which promotions perform better
+Use: Helps understand importance of promotion_type
+3. Sales over time
+Plot: Line chart (items_sold vs date/month)
+Check: Trends, seasonality, festival spikes
+Use: Confirms need for time-based features (month, weekend, festival)
+4. Relationship between numerical features and sales
+Plot: Scatter plots (e.g., footfall vs items_sold)
+Check: Correlation or patterns
+Use: Helps decide important features for model
+5. Correlation heatmap (optional but useful)
+Check: Strong relationships between variables
+Use: Helps in feature selection
+
+
+B2(c) — Imbalance Issue (2 marks)
+Since 80% of transactions have no promotion, the data is imbalanced.
+Problem:
+Model may learn mostly from “no promotion” cases
+It may not properly learn the effect of different promotions
+Solution:
+Ensure enough representation of promotion data
+Use techniques like:
+Sampling (oversample promotion cases or undersample non-promotion)
+Add features to clearly capture promotion impact
+Evaluate model separately on promotion vs non-promotion cases
