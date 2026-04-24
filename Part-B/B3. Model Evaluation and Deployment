@@ -1,0 +1,40 @@
+B3(a) — Train-Test Split & Evaluation
+Since the data is time-based (monthly data over 3 years), I would split it based on time, not randomly.
+Use the first ~80% (earlier months) as training data
+Use the last ~20% (recent months) as test data
+This way, the model learns from past data and is tested on future data, which matches real-world usage.
+
+
+B3(b) — Explaining Different Recommendations (4 marks)
+The model gives different recommendations for December and March because the input features change across months.
+To investigate this, I would use feature importance from the model.
+Steps:
+1.Check which features are most important (e.g., month, festival, footfall, promotion type)
+2.See how these features differ between December and March
+Example explanation to marketing team:
+December may have festivals and higher demand → Loyalty Points works better
+March may have lower demand → Flat Discount attracts more customers
+So the model is not random — it is adjusting based on seasonality and store conditions.
+
+B3(c) — Deployment Process (4 marks)
+1. Save the model
+After training, save the pipeline using:
+import joblib
+joblib.dump(model, "model.pkl")
+2. Use model every month
+Load the saved model:
+model = joblib.load("model.pkl")
+Prepare new monthly data (same format as training data)
+Apply feature engineering (date features, encoding, scaling)
+Predict items_sold for each promotion
+3. Generate recommendations
+For each store, compare predicted sales for all promotions
+Choose the promotion with highest predicted value
+4. Monitoring the model
+To ensure the model is still working well:
+Track prediction errors (RMSE/MAE) over time
+Check if performance is getting worse
+Monitor changes in data (e.g., new trends, customer behaviour)
+5. Retraining
+If performance drops, retrain the model using latest data
+This keeps the model updated with new patterns
