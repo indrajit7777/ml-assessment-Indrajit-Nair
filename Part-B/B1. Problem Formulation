@@ -1,0 +1,17 @@
+B1(a) — What type of ML problem is this?
+This is a regression problem because we are predicting items_sold, which is a number.
+The input features include things like promotion type, store location, store size, footfall, etc. Using these, the model predicts how many items will be sold.
+We can then compare the predicted values for different promotions and choose the one that gives the highest sales.
+
+B1(b) — Why items_sold is better than revenue?
+Revenue depends on price and discounts, so it can sometimes give a wrong idea.
+For example, a flat discount may sell more items but at a lower price, while another promotion may sell fewer items but at a higher price and give more revenue.
+So if we use revenue, the model might prefer high-price options instead of high sales.
+items_sold is better because it directly shows how many items were sold, which makes it a fair comparison between promotions.
+
+B1(c) — Why one global model is a bad idea?
+Using one model for all stores is not a good idea because all stores are different.
+For example, urban stores may have more customers and different preferences compared to rural stores. Some promotions may work well in one type of store but not in another.
+If we use one model, it mixes all this data together and learns an average pattern, which may not work well for any specific store.
+A better approach is to first group similar stores (based on location, footfall, etc.) and then train separate models for each group.
+This way, each model learns from similar data and gives better predictions.
